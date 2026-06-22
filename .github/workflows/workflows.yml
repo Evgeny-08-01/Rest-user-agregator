@@ -16,11 +16,11 @@ jobs:
           go-version: '1.25' 
       - name: Start PostgreSQL               # Запускаем базу данных для тестов
         run: |                               # Многострочная команда для выполнения в bash
-          docker run -d \                   
-            --name postgres \                
-            -e POSTGRES_PASSWORD=testpass \  
-            -e POSTGRES_DB=testdb \          
-            -p 5432:5432 \                   
+          docker run -d \
+            --name postgres \
+            -e POSTGRES_PASSWORD=testpass \
+            -e POSTGRES_DB=testdb \
+            -p 5432:5432 \
             postgres:16                      
           sleep 5                              
 # Запускаем Docker-контейнер в фоновом режиме (-d = detach)
@@ -30,7 +30,7 @@ jobs:
 # Пробрасываем порт: хост(снаружи):контейнер(внутри), чтобы подключаться с виртуалки
  # Ждём 5 секунд, чтобы PostgreSQL успел запуститься и стать доступным для подключения  
 
- 
+
 # Используем официальный образ PostgreSQL версии 16 из Docker Hub
       - name: Build                       # название
         run: go build -v ./...            # компиляция бинарника
