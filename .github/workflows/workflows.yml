@@ -18,8 +18,8 @@ jobs:
         run: |                               # Многострочная команда для выполнения в bash
           docker run -d \
             --name postgres \
-            -e POSTGRES_PASSWORD=testpass \
-            -e POSTGRES_DB=testdb \
+            -e POSTGRES_PASSWORD=mysecret \
+            -e POSTGRES_DB=subscriptions \
             -p 5432:5432 \
             postgres:16                      
           sleep 5                              
