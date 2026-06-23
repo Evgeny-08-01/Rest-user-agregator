@@ -23,10 +23,6 @@ import (
 // @SERVER_PORT=8080
 // @BasePath /api
 func main() {
-//	err := godotenv.Load("./.env")
-//	if err != nil {
-//		 logger.Warn(".env file not found, using default values") 
-//	}
 if err := godotenv.Load(".env"); err != nil {
     logger.Warn(".env file not found, using default values")
 } else {

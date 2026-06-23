@@ -1,169 +1,41 @@
-# Rest User Aggregator
+![act-logo](https://raw.githubusercontent.com/wiki/nektos/act/img/logo-150.png)
 
-REST API сервис для агрегации данных онлайн подписок пользователей.
+# Overview [![push](https://github.com/nektos/act/workflows/push/badge.svg?branch=master&event=push)](https://github.com/nektos/act/actions) [![Go Report Card](https://goreportcard.com/badge/github.com/nektos/act)](https://goreportcard.com/report/github.com/nektos/act) [![awesome-runners](https://img.shields.io/badge/listed%20on-awesome--runners-blue.svg)](https://github.com/jonico/awesome-runners)
 
-## Стек технологий
+> "Think globally, `act` locally"
 
-- Версия Go: 1.25
-- Версия PostgreSQL: 15-alpine
-- Docker / Docker Compose
-- Swagger
-- Логирование с уровнями (DEBUG/INFO/WARN/ERROR/FATAL)
-- Graceful shutdown
-- Интерфейсы для репозитория
+Run your [GitHub Actions](https://developer.github.com/actions/) locally! Why would you want to do this? Two reasons:
 
-## Функциональность
+- **Fast Feedback** - Rather than having to commit/push every time you want to test out the changes you are making to your `.github/workflows/` files (or for any changes to embedded GitHub actions), you can use `act` to run the actions locally. The [environment variables](https://help.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables) and [filesystem](https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners#filesystems-on-github-hosted-runners) are all configured to match what GitHub provides.
+- **Local Task Runner** - I love [make](<https://en.wikipedia.org/wiki/Make_(software)>). However, I also hate repeating myself. With `act`, you can use the GitHub Actions defined in your `.github/workflows/` to replace your `Makefile`!
 
-- CRUDL операции с подписками
-- Подсчёт суммарной стоимости подписок за период с фильтрацией:
-  - по ID пользователя 
-  - по названию сервиса
-- Валидация входных данных:
-  - UUID пользователя (наличие обязательно, диагностируется ошибка в базе данных)
-  - Дата в формате MM-YYYY
-  - Цена подписки ≥ 0
+> [!TIP]
+> **Now Manage and Run Act Directly From VS Code!**<br/>
+> Check out the [GitHub Local Actions](https://sanjulaganepola.github.io/github-local-actions-docs/) Visual Studio Code extension which allows you to leverage the power of `act` to run and test workflows locally without leaving your editor.
 
-## Логирование
+# How Does It Work?
 
-Поддерживаются уровни логирования:
-- `DEBUG` — для отладки (не используется в продакшене)
-- `INFO` — нормальные события (запуск, остановка, HTTP запросы)
-- `WARN` — проблемы, не требующие остановки
-- `ERROR` — сбои, требующие внимания
-- `FATAL` — критические ошибки, сервер падает
+When you run `act` it reads in your GitHub Actions from `.github/workflows/` and determines the set of actions that need to be run. It uses the Docker API to either pull or build the necessary images, as defined in your workflow files and finally determines the execution path based on the dependencies that were defined. Once it has the execution path, it then uses the Docker API to run containers for each action based on the images prepared earlier. The [environment variables](https://help.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables) and [filesystem](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#file-systems) are all configured to match what GitHub provides.
 
-Уровень задаётся переменной `LOG_LEVEL` в `.env`
+Let's see it in action with a [sample repo](https://github.com/cplee/github-actions-demo)!
 
-## Graceful Shutdown
+![Demo](https://raw.githubusercontent.com/wiki/nektos/act/quickstart/act-quickstart-2.gif)
 
-При получении сигналов SIGINT (Ctrl+C) или SIGTERM сервер:
-1. Перестаёт принимать новые соединения
-2. Завершает обработку текущих запросов
-3. Закрывает соединение с БД
-4. Завершает работу с кодом 0
+# Act User Guide
 
-## Запуск
+Please look at the [act user guide](https://nektosact.com) for more documentation.
 
-### Через Docker Compose (рекомендуется)
+# Support
 
-```bash
-docker-compose up --build
-Сервер будет доступен по адресу: http://localhost:8080
+Need help? Ask in [discussions](https://github.com/nektos/act/discussions)!
 
-Локальный запуск (без Docker)
-Установите PostgreSQL и создайте базу данных subscriptions
+# Contributing
 
-Создайте файл .env в корне проекта (скопируйте из .env.example):
+Want to contribute to act? Awesome! Check out the [contributing guidelines](CONTRIBUTING.md) to get involved.
 
-env
-DB_PATH=postgres://postgres:mysecret@localhost:5432/subscriptions?sslmode=disable
-SERVER_PORT=8080
-POSTGRES_PASSWORD=mysecret
-POSTGRES_DB=subscriptions
-LOG_LEVEL=info
-Запустите сервер:
+## Manually building from source
 
-bash
-go run cmd/api/main.go
-API Endpoints
-Метод	Endpoint	Описание
-POST	/api/subscriptions	Создать подписку
-GET	/api/subscriptions/{id}	Получить подписку по ID
-PUT	/api/subscriptions/{id}	Обновить подписку
-DELETE	/api/subscriptions/{id}	Удалить подписку
-GET	/api/subscriptions	Список подписок (с пагинацией)
-GET	/api/subscriptions/total-cost	Суммарная стоимость подписок
-Параметры фильтрации для /api/subscriptions/total-cost
-Параметр	Тип	Описание
-user_id	UUID	ID пользователя
-service_name	string	Название сервиса
-start_date	string	Дата начала (MM-YYYY)
-end_date	string	Дата окончания (MM-YYYY)
-Примеры запросов
-Создание подписки
-json
-POST /api/subscriptions
-{
-    "service_name": "Yandex Plus",
-    "price": 400,
-    "user_id": "60601fee-2bf1-4721-ae6f-7636e79a0cba",
-    "start_date": "07-2025"
-}
-Ответ:
-
-json
-{
-    "id": 1
-}
-Получение суммарной стоимости
-json
-GET /api/subscriptions/total-cost?user_id=60601fee-2bf1-4721-ae6f-7636e79a0cba&start_date=01-2025&end_date=12-2025
-
-{
-    "total": 1500
-}
-Документация Swagger
-После запуска сервера документация доступна по адресу:
-
-text
-http://localhost:8080/swagger/index.html
-Тестирование
-bash
-# Запуск всех тестов
-go test ./... -v
-
-# Запуск тестов с покрытием
-go test ./... -cover
-
-# Результат: handlers: ~68%, logger: ~82%
-Миграции
-Миграции применяются автоматически при запуске сервера.
-
-Up migration: migrations/000001_create_subscriptions_table.up.sql
-
-Down migration: migrations/000001_create_subscriptions_table.down.sql
-
-Откат миграций
-Для отката миграций используйте флаг -down:
-
-bash
-go run cmd/api/main.go -down
-Структура проекта
-text
-Rest-user-aggregator/
-├── cmd/api/                 # Точка входа
-├── internal/
-│   ├── database/            # Инициализация БД + CRUDL + PostgresRepo
-│   ├── handlers/            # HTTP хэндлеры + хелперы + тесты
-│   ├── models/              # Модели данных
-│   ├── repository/          # Интерфейс репозитория
-├── migrations/              # SQL миграции
-├── docs/                    # Swagger документация
-├── pkg/logger/              # Логирование с уровнями
-├── compose.yaml             # Docker Compose
-├── .env.example             # Пример конфигурации
-└── go.mod                   # Зависимости
-Переменные окружения
-Переменная	                      Описание	                              Значение по умолчанию
-DB_PATH                          	Строка подключения к PostgreSQL	        postgres://postgres:mysecret@db:5432/subscriptions?sslmode=disable
-SERVER_PORT                      	Порт сервера	                          8080
-POSTGRES_PASSWORD                	Пароль PostgreSQL	                      mysecret
-POSTGRES_DB	                      Имя базы данных	                        subscriptions
-LOG_LEVEL	                        Уровень логирования	                    info
-Архитектура
-Проект                            построен на принципах:
-
-Инкапсуляция — БД приватная (db), доступ только через методы
-
-Интерфейсы — SubscriptionRepository отделяет бизнес-логику от работы с БД
-
-Внедрение зависимостей — хендлеры получают репозиторий через конструктор
-
-Слабая связность — легко подменить реализацию БД или мокировать в тестах
-
-Возможные              ошибки                              и их решение
-Ошибка	Решение
-user_id                must always be a valid UUID	       Проверьте, что переданный user_id соответствует формату UUID
-start_date             must be in format MM-YYYY	         Используйте формат: месяц (01-12) и год (1900-2100) через дефис
-price                  must not be negative	               Цена подписки должна быть ≥ 0
-Database               error	                             Проверьте подключение к PostgreSQL и выполнение миграций
+- Install Go tools 1.20+ - (<https://golang.org/doc/install>)
+- Clone this repo `git clone git@github.com:nektos/act.git`
+- Run unit tests with `make test`
+- Build and install: `make install`
