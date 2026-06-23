@@ -33,7 +33,7 @@ COPY --from=base_image /app/migrations ./migrations
 COPY --from=base_image /app/docs ./docs
 
 # Копируем .env в корень (где запускается бинарник)
-COPY --from=base_image /app/.env /.env
+# COPY --from=base_image /app/.env /.env
 
 # Запуск приложения
 CMD ["/subscription_app"]
