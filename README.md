@@ -1,4 +1,6 @@
-# Rest User Aggregator
+# Rest User Agregator
+
+[![CI/CD](https://github.com/Evgeny-08-01/Rest-user-agregator/actions/workflows/workflows.yml/badge.svg)](https://github.com/Evgeny-08-01/Rest-user-agregator/actions)
 
 REST API сервис для агрегации данных онлайн подписок пользователей.
 
@@ -48,40 +50,51 @@ REST API сервис для агрегации данных онлайн под
 
 ```bash
 docker-compose up --build
+```
+
 Сервер будет доступен по адресу: http://localhost:8080
 
-Локальный запуск (без Docker)
+### Локальный запуск (без Docker)
 Установите PostgreSQL и создайте базу данных subscriptions
 
 Создайте файл .env в корне проекта (скопируйте из .env.example):
 
-env
+```env
 DB_PATH=postgres://postgres:mysecret@localhost:5432/subscriptions?sslmode=disable
 SERVER_PORT=8080
 POSTGRES_PASSWORD=mysecret
 POSTGRES_DB=subscriptions
 LOG_LEVEL=info
+```
 Запустите сервер:
 
-bash
+```bash
 go run cmd/api/main.go
-API Endpoints
-Метод	Endpoint	Описание
-POST	/api/subscriptions	Создать подписку
-GET	/api/subscriptions/{id}	Получить подписку по ID
-PUT	/api/subscriptions/{id}	Обновить подписку
-DELETE	/api/subscriptions/{id}	Удалить подписку
-GET	/api/subscriptions	Список подписок (с пагинацией)
-GET	/api/subscriptions/total-cost	Суммарная стоимость подписок
-Параметры фильтрации для /api/subscriptions/total-cost
-Параметр	Тип	Описание
-user_id	UUID	ID пользователя
-service_name	string	Название сервиса
-start_date	string	Дата начала (MM-YYYY)
-end_date	string	Дата окончания (MM-YYYY)
-Примеры запросов
-Создание подписки
-json
+```
+
+## API Endpoints
+
+| Метод     | Endpoint                          | Описание                       |
+|-----------|-----------------------------------|--------------------------------|
+| POST      | `/api/subscriptions`              | Создать подписку               |
+| GET       | `/api/subscriptions/{id}`         | Получить подписку по ID        |
+| PUT       | `/api/subscriptions/{id}`         | Обновить подписку              |
+| DELETE    | `/api/subscriptions/{id}`         | Удалить подписку               |
+| GET       | `/api/subscriptions`              | Список подписок (с пагинацией) |
+| GET       | `/api/subscriptions/total-cost`   | Суммарная стоимость подписок   |
+### Параметры фильтрации для `/api/subscriptions/total-cost`
+
+| Параметр        | Тип             | Описание                 |
+|-----------------|-----------------|--------------------------|
+| `user_id`       | UUID            | ID пользователя          |
+| `service_name`  | string          | Название сервиса         |
+| `start_date`    | string          | Дата начала (MM-YYYY)    |
+| `end_date`      | string          | Дата окончания (MM-YYYY) |
+## Примеры запросов
+
+### Создание подписки
+
+```json
 POST /api/subscriptions
 {
     "service_name": "Yandex Plus",
@@ -89,69 +102,93 @@ POST /api/subscriptions
     "user_id": "60601fee-2bf1-4721-ae6f-7636e79a0cba",
     "start_date": "07-2025"
 }
-Ответ:
+```
 
-json
+Ответ:
+```json
 {
     "id": 1
 }
-Получение суммарной стоимости
-json
-GET /api/subscriptions/total-cost?user_id=60601fee-2bf1-4721-ae6f-7636e79a0cba&start_date=01-2025&end_date=12-2025
+```
+### Получение суммарной стоимости
 
+```json
+GET /api/subscriptions/total-cost?user_id=60601fee-2bf1-4721-ae6f-7636e79a0cba&start_date=01-2025&end_date=12-2025
+```
+
+Ответ:
+```json
 {
     "total": 1500
 }
-Документация Swagger
+```
+## Документация Swagger
+
 После запуска сервера документация доступна по адресу:
 
-text
+
 http://localhost:8080/swagger/index.html
-Тестирование
-bash
+## Тестирование
+
+```bash
 # Запуск всех тестов
 go test ./... -v
 
 # Запуск тестов с покрытием
 go test ./... -cover
+```
 
-# Результат: handlers: ~68%, logger: ~82%
-Миграции
+Результат: `handlers: ~68%, logger: ~82%`
+## Миграции
+
 Миграции применяются автоматически при запуске сервера.
 
-Up migration: migrations/000001_create_subscriptions_table.up.sql
+- Up migration: `migrations/000001_create_subscriptions_table.up.sql`
+- Down migration: `migrations/000001_create_subscriptions_table.down.sql`
 
-Down migration: migrations/000001_create_subscriptions_table.down.sql
+### Откат миграций
 
-Откат миграций
-Для отката миграций используйте флаг -down:
+Для отката миграций используйте флаг `-down`:
 
-bash
+```bash
 go run cmd/api/main.go -down
-Структура проекта
+```
+
+## Структура проекта
 text
-Rest-user-aggregator/
-├── cmd/api/                 # Точка входа
+Rest-user-agregator/
+├── .github/
+│   └── workflows/
+│       └── workflows.yml    # GitHub Actions CI/CD
+├── cmd/
+│   └── api/                 # Точка входа
+│       └── main.go
 ├── internal/
 │   ├── database/            # Инициализация БД + CRUDL + PostgresRepo
 │   ├── handlers/            # HTTP хэндлеры + хелперы + тесты
 │   ├── models/              # Модели данных
-│   ├── repository/          # Интерфейс репозитория
+│   └── repository/          # Интерфейс репозитория
 ├── migrations/              # SQL миграции
 ├── docs/                    # Swagger документация
-├── pkg/logger/              # Логирование с уровнями
+├── pkg/
+│   └── logger/              # Логирование с уровнями
 ├── compose.yaml             # Docker Compose
 ├── .env.example             # Пример конфигурации
-└── go.mod                   # Зависимости
-Переменные окружения
-Переменная	                      Описание	                              Значение по умолчанию
-DB_PATH                          	Строка подключения к PostgreSQL	        postgres://postgres:mysecret@db:5432/subscriptions?sslmode=disable
-SERVER_PORT                      	Порт сервера	                          8080
-POSTGRES_PASSWORD                	Пароль PostgreSQL	                      mysecret
-POSTGRES_DB	                      Имя базы данных	                        subscriptions
-LOG_LEVEL	                        Уровень логирования	                    info
-Архитектура
-Проект                            построен на принципах:
+├── .gitignore               # Игнорируемые файлы
+├── Dockerfile               # Docker образ
+├── go.mod                   # Зависимости
+└── go.sum                   # Контрольные суммы зависимостей
+## Переменные окружения
+
+| Переменная         | Описание                 | Значение по умолчанию                                                |
+|--------------------|--------------------------|----------------------------------------------------------------------|
+| `DB_PATH`          | Подключение к PostgreSQL | `postgres://postgres:mysecret@db:5432/subscriptions?sslmode=disable` |
+| `SERVER_PORT`      | Порт сервера             | `8080`                                                               |
+| `POSTGRES_PASSWORD`| Пароль PostgreSQL        | `mysecret`                                                           |
+| `POSTGRES_DB`      | Имя базы данных          | `subscriptions`                                                      |
+| `LOG_LEVEL`        | Уровень логирования      | `info`                                                               |
+## Архитектура
+Проект построен на принципах:
 
 Инкапсуляция — БД приватная (db), доступ только через методы
 
@@ -161,9 +198,45 @@ LOG_LEVEL	                        Уровень логирования	        
 
 Слабая связность — легко подменить реализацию БД или мокировать в тестах
 
-Возможные              ошибки                              и их решение
-Ошибка	Решение
-user_id                must always be a valid UUID	       Проверьте, что переданный user_id соответствует формату UUID
-start_date             must be in format MM-YYYY	         Используйте формат: месяц (01-12) и год (1900-2100) через дефис
-price                  must not be negative	               Цена подписки должна быть ≥ 0
-Database               error	                             Проверьте подключение к PostgreSQL и выполнение миграций
+## Возможные ошибки и их решение
+
+| Ошибка                                 | Решение                                                         |
+|----------------------------------------|-----------------------------------------------------------------|
+| `user_id` must always be a valid UUID  | Проверьте, что переданный user_id соответствует формату UUID    |
+| `start_date` must be in format MM-YYYY | Используйте формат: месяц (01-12) и год (1900-2100) через дефис |
+| `price` must not be negative           | Цена подписки должна быть ≥ 0                                   |
+| Database error                         | Проверьте подключение к PostgreSQL и выполнение миграций        |
+## CI/CD (GitHub Actions)
+Проект использует GitHub Actions для автоматического тестирования и публикации Docker-образов.
+
+Workflow: rest-user-agregator
+
+Пайплайн состоит из двух джоб:
+
+Test (job1)
+Запускается при каждом push в ветку main
+
+Устанавливает Go 1.25
+
+Запускает PostgreSQL 16 в Docker-контейнере
+
+Выполняет сборку (go build)
+
+Запускает все тесты (go test -v ./...)
+
+Publish (job2)
+Запускается только при создании тега (например, v1.0.0)
+
+Зависит от успешного выполнения job1 (тесты должны пройти)
+
+Собирает мультиплатформенный Docker-образ (linux/amd64, linux/arm64)
+
+Публикует образ в Docker Hub
+
+Секреты для GitHub Actions
+Для публикации в Docker Hub в настройках репозитория должны быть установлены следующие секреты:
+
+Секрет	Описание
+DOCKER_USERNAME	Имя пользователя Docker Hub
+DOCKER_ACCESS_TOKEN	Токен доступа к Docker Hub
+Настройка: Settings → Secrets and variables → Actions
