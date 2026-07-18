@@ -1,4 +1,4 @@
-name: rest-user-aggregator                # имя воркфлоу
+name: rest-user-agregator                # имя воркфлоу
 on:                                       # запуск по заливке кода в главную ветку
   push:                                   # запуск по пушь 
     branches: [main]                      # запуск по пушу  в главную ветку
@@ -58,7 +58,7 @@ jobs:
         id: meta                                           # Используется для получения выходных данных
         uses: docker/metadata-action@v5.5.1 #
         with: 
-          images: evgenyvorobiev/rest-user-aggregator  # Используется для указания имени Docker Hub-репозитория
+          images: evgenyvorobiev/rest-user-agregator  # Используется для указания имени Docker Hub-репозитория
 
       - name: Build and push Docker Image              # Этот шаг использует действие "docker/build-push-action@v5", которое строит и публикует Docker образ
         uses: docker/build-push-action@v5
