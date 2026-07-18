@@ -155,7 +155,9 @@ go run cmd/api/main.go -down
 ```
 
 ## Структура проекта
-text
+
+```
+
 Rest-user-agregator/
 ├── .github/
 │   └── workflows/
@@ -178,6 +180,7 @@ Rest-user-agregator/
 ├── Dockerfile               # Docker образ
 ├── go.mod                   # Зависимости
 └── go.sum                   # Контрольные суммы зависимостей
+```
 ## Переменные окружения
 
 | Переменная         | Описание                 | Значение по умолчанию                                                |
