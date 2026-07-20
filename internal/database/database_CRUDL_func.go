@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Evgeny-08-01/Rest-user-aggregator/internal/models"
-	"github.com/Evgeny-08-01/Rest-user-aggregator/pkg/logger"
+	"github.com/Evgeny-08-01/Rest-user-agregator/internal/models"
+	"github.com/Evgeny-08-01/Rest-user-agregator/pkg/logger"
 )
 
 // CreateSubscription : 1 ФУНКЦИЯ== добавляет подписку в конец БД и ******** Create
@@ -142,6 +142,9 @@ func (r *PostgresRepo) ListSubscriptions(ctx context.Context,limit, offset int) 
 	var startDate time.Time
 	var endDate sql.NullTime
 	for rows.Next() {
+    if ctx.Err() != nil {
+		return nil, ctx.Err() 
+    }
 		var sub models.Subscription
 		err := rows.Scan(&sub.ID, &sub.ServiceName, &sub.Price, &sub.UserID, &startDate, &endDate)
 		if err != nil {

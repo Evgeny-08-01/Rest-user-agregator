@@ -3,7 +3,7 @@ package repository
 
 import (
     "context"
-    "github.com/Evgeny-08-01/Rest-user-aggregator/internal/models"
+    "github.com/Evgeny-08-01/Rest-user-agregator/internal/models"
 )
 
 // SubscriptionRepository - список всех методов для работы с БД
