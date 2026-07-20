@@ -1,6 +1,6 @@
 module github.com/Evgeny-08-01/Rest-user-aggregator
 
-go 1.23.0
+go 1.25.0
 
 require (
 	github.com/joho/godotenv v1.5.1
@@ -10,7 +10,6 @@ require (
 )
 
 require (
-	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/go-openapi/jsonpointer v0.23.1 // indirect
 	github.com/go-openapi/jsonreference v0.21.5 // indirect
 	github.com/go-openapi/spec v0.22.4 // indirect
@@ -24,8 +23,5 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/swaggo/files v1.0.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/mod v0.35.0 // indirect
 	golang.org/x/net v0.53.0 // indirect
-	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/tools v0.44.0 // indirect
 )
