@@ -8,10 +8,10 @@ import (
 	"syscall"
 	"time"
 
-	_ "github.com/Evgeny-08-01/Rest-user-aggregator/docs"
-	"github.com/Evgeny-08-01/Rest-user-aggregator/internal/database"
-	"github.com/Evgeny-08-01/Rest-user-aggregator/internal/handlers"
-	"github.com/Evgeny-08-01/Rest-user-aggregator/pkg/logger"
+	_ "github.com/Evgeny-08-01/Rest-user-agregator/docs"
+	"github.com/Evgeny-08-01/Rest-user-agregator/internal/database"
+	"github.com/Evgeny-08-01/Rest-user-agregator/internal/handlers"
+	"github.com/Evgeny-08-01/Rest-user-agregator/pkg/logger"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/swaggo/http-swagger"
@@ -36,9 +36,9 @@ if err := godotenv.Load(".env"); err != nil {
     if logLevel == "" {
         logLevel = "info"
     }
-logPath := "/root/app.log"
+logPath := "/var/log/app/app.log"
 if os.Getenv("ENV") != "docker" {
-    logPath = "app.log"
+    logPath = "./logs/app.log"
 }	
 logger.Init(logPath, logLevel)
 logger.Info("Starting Subscription API server") 
@@ -114,7 +114,7 @@ if err := database.RunMigrations(); err != nil {
 
 logger.Info("Shutting down server...")
 // 12. Контекст с таймаутом на завершение (5 секунд)
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), 11*time.Second)
     defer cancel()
 
 // 13. Останавливаем сервер
