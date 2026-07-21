@@ -162,7 +162,6 @@ go run cmd/api/main.go -down
 ## Структура проекта
 
 ```
-
 Rest-user-agregator/
 ├── .github/
 │   └── workflows/
@@ -179,9 +178,12 @@ Rest-user-agregator/
 ├── docs/                    # Swagger документация
 ├── pkg/
 │   └── logger/              # Логирование с уровнями
+├── technical requirements/  # Техническое задание (папка с ТЗ)
+│   └── technical requirements.txt
 ├── compose.yaml             # Docker Compose
 ├── .env.example             # Пример конфигурации
 ├── .gitignore               # Игнорируемые файлы
+├── .dockerignore            # Игнорируемые файлы для Docker
 ├── Dockerfile               # Docker образ
 ├── go.mod                   # Зависимости
 └── go.sum                   # Контрольные суммы зависимостей
@@ -219,14 +221,14 @@ Rest-user-agregator/
 
 Workflow: rest-user-agregator
 
-Пайплайн состоит из двух джоб:
+Пайплайн состоит из двух джобов:
 
 Test (job1)
 Запускается при каждом push в ветку main
 
-Устанавливает Go 1.25
+Устанавливает Go 1.23.4
 
-Запускает PostgreSQL 16 в Docker-контейнере
+Запускает PostgreSQL 15-alpine в Docker-контейнере
 
 Выполняет сборку (go build)
 
