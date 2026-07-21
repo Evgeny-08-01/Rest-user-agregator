@@ -2,11 +2,13 @@
 
 [![CI/CD](https://github.com/Evgeny-08-01/Rest-user-agregator/actions/workflows/workflows.yml/badge.svg)](https://github.com/Evgeny-08-01/Rest-user-agregator/actions)
 
+**📄 Техническое задание:** [Посмотреть ТЗ](./technical%20requirements/technical%20requirements.txt)
+
 REST API сервис для агрегации данных онлайн подписок пользователей.
 
 ## Стек технологий
 
-- Версия Go: 1.25
+- Версия Go: 1.23
 - Версия PostgreSQL: 15-alpine
 - Docker / Docker Compose
 - Swagger
@@ -42,7 +44,10 @@ REST API сервис для агрегации данных онлайн под
 1. Перестаёт принимать новые соединения
 2. Завершает обработку текущих запросов
 3. Закрывает соединение с БД
-4. Завершает работу с кодом 0
+4. Завершает работу с кодом 
+   - Код 0 — если все запросы успели завершиться.
+   - Код 1 — если произошла ошибка при старте или остановке.
+
 
 ## Запуск
 
