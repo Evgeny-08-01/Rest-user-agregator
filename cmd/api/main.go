@@ -28,7 +28,6 @@ if err := godotenv.Load(".env"); err != nil {
     log.Println("[WARN] .env file not found, using default values")
 } else {
     log.Println("[INFO] .env file loaded successfully")
-}
     // Выведи значение DB_PATH для проверки
     log.Printf("[INFO] DB_PATH from .env: %s", os.Getenv("DB_PATH"))
 }
@@ -37,7 +36,7 @@ if err := godotenv.Load(".env"); err != nil {
     logLevel := os.Getenv("LOG_LEVEL")
     if logLevel == "" {
         logLevel = "info"
-    }
+    
 logPath := "/var/log/app/app.log"
 if os.Getenv("ENV") != "docker" {
     logPath = "./logs/app.log"
@@ -128,3 +127,4 @@ logger.Info("Shutting down server...")
    logger.Info("Server exited properly")
 }
 
+}
