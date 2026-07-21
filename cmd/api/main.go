@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+    "log"
 
 	_ "github.com/Evgeny-08-01/Rest-user-agregator/docs"
 	"github.com/Evgeny-08-01/Rest-user-agregator/internal/database"
@@ -24,14 +25,15 @@ import (
 // @BasePath /api
 func main() {
 if err := godotenv.Load(".env"); err != nil {
-    logger.Warn(".env file not found, using default values")
+    log.Println("[WARN] .env file not found, using default values")
 } else {
-    logger.Info(".env file loaded successfully")
-    // Выведи значение DB_PATH для проверки
-    logger.Info("DB_PATH from .env: %s", os.Getenv("DB_PATH"))
+    log.Println("[INFO] .env file loaded successfully")
 }
+    // Выведи значение DB_PATH для проверки
+    log.Printf("[INFO] DB_PATH from .env: %s", os.Getenv("DB_PATH"))
+}
+
  // 2. Инициализируем логгер (читаем уровень из .env)
- 
     logLevel := os.Getenv("LOG_LEVEL")
     if logLevel == "" {
         logLevel = "info"
