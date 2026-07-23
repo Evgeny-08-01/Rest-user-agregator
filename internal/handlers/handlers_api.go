@@ -13,7 +13,7 @@ import (
 
 // Handler - структура хендлера, принимающая репозиторий
 type Handler struct {
-    Repo repository.SubscriptionRepository
+    Repo repository.SubscriptionRepository // Repo-интерфейс, содержит все методы для работы с БД
 }
 
 // NewHandler - конструктор хендлера

@@ -148,6 +148,10 @@ func startServer() error {
 	mux.HandleFunc("GET     /api/subscriptions",               handlers.LoggingMiddleware(handler.ListSubscriptionsHandler))
 	mux.HandleFunc("GET     /api/subscriptions/total-cost",    handlers.LoggingMiddleware(handler.GetTotalCostHandler))
 	mux.HandleFunc("GET     /swagger/",                        httpSwagger.WrapHandler)
+// ============================================================
+// HEALTHCHECK (для Docker)
+// ============================================================
+mux.HandleFunc("GET /health", handlers.LoggingMiddleware(handlers.HealthHandler))
 
 	//  Получаем порт из .env
 	port := os.Getenv("SERVER_PORT")

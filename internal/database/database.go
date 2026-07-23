@@ -46,14 +46,18 @@ func Close() error {
 	return nil
 }
 
-// PostgresRepo структура - реализует интерфейс SubscriptionRepository
+// PostgresRepo структура - реализует интерфейс SubscriptionRepository....и это структура, 
+// которая содержит в себе подключение к базе данных *sql.DB и предоставляет методы для выполнения
+//  всех SQL-запросов из пакета interface 
+//
 type PostgresRepo struct {
     db *sql.DB
 }
 // ЯВНАЯ ПРОВЕРКА: гарантирует, что PostgresRepo реализует интерфейс repository.SubscriptionRepository
 var _ repository.SubscriptionRepository = (*PostgresRepo)(nil)
 
-// NewPostgresRepo - конструктор
+// NewPostgresRepo - конструктор(обертка)- возвращает указатель на структуру PostgresRepo, 
+// которая содержит пул соединений и все методы для работы с БД 
 func NewPostgresRepo() *PostgresRepo {
 	 if db == nil {
         logger.Error("Database not initialized. Call Init() first")

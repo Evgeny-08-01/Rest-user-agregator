@@ -5,7 +5,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-
 	"strconv"
 	"time"
 
@@ -13,7 +12,7 @@ import (
 	"github.com/Evgeny-08-01/Rest-user-agregator/pkg/logger"
 )
 
-// CreateSubscription : 1 ФУНКЦИЯ== добавляет подписку в конец БД и ******** Create
+// CreateSubscription : 1 Метод== добавляет подписку в конец БД и ******** Create
 // возвращает id+error
 func (r *PostgresRepo) CreateSubscription(ctx context.Context, sub models.Subscription) (int, error)  {
 	var id int
@@ -42,7 +41,7 @@ logger.Debug("CreateSubscription: successfully created subscription id=%d for us
 	return id, err
 }
 
-// GetSubscriptionByID : 2 ФУНКЦИЯ==  получение подписки по ID***************** Read
+// GetSubscriptionByID : 2 Метод==  получение подписки по ID***************** Read
 func (r *PostgresRepo) GetSubscriptionByID(ctx context.Context,id int) (*models.Subscription, error) {
 	query := `SELECT id, service_name, price, user_id, start_date, end_date  FROM subscriptions WHERE id = $1`
 	row := r.db.QueryRowContext(ctx,query, id)
@@ -68,7 +67,7 @@ logger.Debug("GetSubscriptionByID: successfully retrieved subscription id=%d for
 }
 
 
-// UpdateSubscription : 3 ФУНКЦИЯ== - обновление подписки*********************** Update
+// UpdateSubscription : 3 Метод== - обновление подписки*********************** Update
 func (r *PostgresRepo) UpdateSubscription(ctx context.Context,sub models.Subscription) error {
   startDateDB, err := time.Parse("01-2006", sub.StartDate)
 	 if err != nil {
@@ -102,7 +101,7 @@ func (r *PostgresRepo) UpdateSubscription(ctx context.Context,sub models.Subscri
 	  logger.Debug("UpdateSubscription: successfully updated subscription id %d", sub.ID)
     return nil
 }
-// DeleteSubscription : 4 ФУНКЦИЯ== -  удаляет подписку по ID     *************** Delete
+// DeleteSubscription : 4 Метод== -  удаляет подписку по ID     *************** Delete
 func (r *PostgresRepo) DeleteSubscription(ctx context.Context,id int) error {
     query := `DELETE FROM subscriptions WHERE id = $1`
     result, err := r.db.ExecContext(ctx,query, id)
@@ -122,7 +121,7 @@ func (r *PostgresRepo) DeleteSubscription(ctx context.Context,id int) error {
 	 logger.Debug("DeleteSubscription: successfully deleted subscription id %d", id)
     return nil
 }
-// ListSubscriptions : 5 ФУНКЦИЯ== - получение списка подписок,
+// ListSubscriptions : 5 Метод== - получение списка подписок,
 // отсортированный по user_id + по id, с пагинацией(limit, offset)  *************** List
 // ListSubscriptions - возвращает список подписок с пагинацией, отсортированный по user_id и id
 func (r *PostgresRepo) ListSubscriptions(ctx context.Context,limit, offset int) ([]models.Subscription, error) {
@@ -169,7 +168,7 @@ if endDate.Valid {
     return subscriptions, nil
 }
 
-// GetTotalCost - возвращает суммарную стоимость подписок за период с фильтрацией
+// GetTotalCost -: 6 Метод возвращает суммарную стоимость подписок за период с фильтрацией
 func (r *PostgresRepo) GetTotalCost(ctx context.Context,userID, serviceName, startDate, endDate string) (int, error) {
 // startDate-стартовая дата, endDate-конечная дата просчитываемого периода, 
 // указанного в задании на расчет- обязательные поля!!!

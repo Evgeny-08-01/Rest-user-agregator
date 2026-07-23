@@ -1,32 +1,85 @@
+# ============================================================
+# DOCKER COMPOSE ДЛЯ ПРОДАКШЕНА
+# ============================================================
+# Запуск: docker-compose up -d
+# Остановка: docker-compose down
+# Просмотр логов: docker-compose logs -f
+# ============================================================
+
 services:
+  # ============================================================
+  # СЕРВИС: GO-ПРИЛОЖЕНИЕ (REST API)
+  # ============================================================
   server:
+    healthcheck:                                   # проверка работы сервера через эндпоинт.."http://localhost:8080/health"
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+    container_name: subscription-api                 # имя контейнера
+    restart: unless-stopped                          # перезапускать, если не был вручную остановлен
+    deploy:                            # <-- добавить сюда
+      resources:
+        limits:
+          memory: 1G       
+          cpus: '1.0'      
     environment:
-      - ENV=docker 
+      - ENV=docker                                   # переменная окружения для приложения Go (передаёт инфу, что Docker запущен)
     volumes:
-      - ./app.log:/root/app.log
-    build: .
+      - ./logs:/var/log/app                          # монтирует и связывает папки на ПК logs и /var/log/app в контейнере (логи сохраняются локально)
+    build: .                                         # создание Docker-образа из Dockerfile в текущей папке
     env_file: 
-      - .env
+      - .env                                         # берём данные окружения из файла .env на ПК
     ports:
-      - "8080:8080"
+      - "8080:8080"                                  # задаём порты
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy                   # построение Docker зависит от service_healthy из БД
+    networks:
+      - app-network                                  # внутренняя сеть для общения с БД
+
+  # ============================================================
+  # СЕРВИС: POSTGRESQL (БАЗА ДАННЫХ)
+  # ============================================================
   db:
-    image: postgres:15-alpine
+    container_name: subscription-db                  # имя контейнера
+    image: postgres:15-alpine                         # версия образа (лёгкая)
+    restart: unless-stopped                          # перезапуск, пока вручную не остановлен
+    deploy:
+      resources:
+        limits:
+          memory: 1G      
+          cpus: '1.0'     
     environment:
-      POSTGRES_HOST_AUTH_METHOD: trust
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}   # пользователь БД (по умолчанию postgres)
+      POSTGRES_HOST_AUTH_METHOD: trust               # доверять авторизации (для локальной разработки)
+      # ⚠️ В продакшене замени trust на password и убедись, что пароль задан в .env
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}        # взять пароль из .env
+      POSTGRES_DB: ${POSTGRES_DB}                    # взять имя БД из .env
     ports:
-      - "5432:5432"
+      - "5432:5432"                                  # пробросить порт взаимодействия БД с ПК
     volumes:
-      - ./database:/var/lib/postgresql/data
-       # <--- Изменённая строка - postgres-db:/var/lib/postgresql/data
+      - postgres-db:/var/lib/postgresql/data         # связываем том postgres-db с папкой данных БД внутри контейнера (данные сохраняются на ПК, даже если контейнер удалён)
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      test: ["CMD-SHELL", "pg_isready -U postgres"]  # проверка через pg_isready (ждём, пока БД ответит)
+      interval: 10s                                  # проверять каждые 10 секунд (в продакшене реже, чтобы не грузить БД)
+      timeout: 5s                                    # ждать ответа 5 секунд
+      retries: 5                                     # 5 попыток (максимум 50 секунд)
+    networks:
+      - app-network                                  # внутренняя сеть для общения с сервером
+
+# ============================================================
+# ОБЪЯВЛЕНИЕ ТОМОВ (хранилища данных)
+# ============================================================
 volumes:
-  postgres-db:
+  postgres-db:                                       # именованный том для PostgreSQL на ПК (создаётся и управляется Docker)
+    driver: local                                    # явно указываем локальный драйвер (значение по умолчанию)
+
+# ============================================================
+# ОБЪЯВЛЕНИЕ СЕТЕЙ (внутренняя изоляция контейнеров)
+# ============================================================
+networks:
+  app-network:
+    driver: bridge                                   # стандартная сеть между контейнерами (изолирует их от внешнего мира)
